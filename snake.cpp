@@ -1,13 +1,18 @@
+/*
+ *      Snake v2.1
+ *          https://github.com/Yaroslav55/Snake-2
+ *                  Dev Yaroslav
+ */
 #include "snake.h"
 #include <QDebug>
 #include <QMainWindow>
 #include <iostream>
-
+#include <cmath>
 snake::snake()
 {
     loadLevel();
     for (int i = 0; i < 1; i++)
-        snakeBotCoord.append(QPoint(140 - i * 20, 140));
+        snakeBotCoord.append(QPoint(540 - i * 20, 140));
 }
 
 snake::~snake()
@@ -73,8 +78,8 @@ int snake::updateLevelData(QPoint point)
         route.append(point); //Append target coords
         return 1;
     }
-    //    LevelRoutes[foodCoord.y()/20][foodCoord.x()/20] = 'M';
-    //    printMapMovement();
+    LevelRoutes[foodCoord.y() / 20][foodCoord.x() / 20] = 'M';
+    //printMapMovement();
     return 1;
 }
 qint8 snake::createMovingMap(qint8 weightBlock)
@@ -201,13 +206,38 @@ int snake::getNormVectorDirection()
     normVectorDirection.ry() = vectorDirection.y() / direction;
     return 1;
 }
+void snake::eatingBody(){
+    for(int i = 2;i < snakeBotCoord.length(); i++){
+        /* snakeBotCoord[0] - snake head */
+        if( snakeBotCoord[0] == snakeBotCoord[i] ){
+            snakeBotCoord.erase(snakeBotCoord.begin() + i, snakeBotCoord.end()-1);
+            i = 100;
+            break;
+        }
+    }
+}
+void snake::createFood(){
+    QPoint vectorDir;
+    int dir;
+    foodCoord = QPoint(1 + rand() % 34, 1 + rand() % 19) *= 20;
+    for(int i = 0; i < snakeBotCoord.length();i++){
+        vectorDir = foodCoord - snakeBotCoord[i];
+        dir = round(sqrt(pow(vectorDir.x(), 2) + pow(vectorDir.y(), 2)));
+        if( dir < 30 ){
+           foodCoord = QPoint(1 + rand() % 34, 1 + rand() % 19) *= 20;
+           i = 0;
+        }
+    }
+}
 int snake::snakeBotMove(QPoint point)
 {
     int status = updateLevelData(point);
+    vectorDirection = point - snakeBotCoord[0];
+    direction = round(sqrt(pow(vectorDirection.x(), 2) + pow(vectorDirection.y(), 2)));
     if (status != 1) {
         qDebug() << "Error " << status;
         return -1;
-    } else {
+    } else if( direction > 4  ){
         getRoutePoints(snakeBotCoord[0]);
         /*     Snake move     */
         if (getNormVectorDirection()) {
@@ -219,19 +249,23 @@ int snake::snakeBotMove(QPoint point)
                 snakeBotCoord[0].ry() += round(normVectorDirection.y()) * speed;
         }
     }
-    //printMapMovement();
+    eatingBody();
     EatingFood();
     return 0;
 }
-QPoint snake::EatingFood()
+bool snake::EatingFood()
 {
     QPoint vectorDir = foodCoord - snakeBotCoord[0];
     int dir = round(sqrt(pow(vectorDir.x(), 2) + pow(vectorDir.y(), 2)));
     if (dir <= 10) {
         route.clear(); //Clear old route
-        foodCoord = QPoint(1 + rand() % 34, 1 + rand() % 19) *= 20;
+        createFood();
+        //std::cin >> foodCoord.rx();
+        //std::cin >> foodCoord.ry();
         snakeBotCoord.append(snakeBotCoord.back());//Snake length+1
+        return 1;
     }
+    return 0;
 }
 QPoint snake::getFoodCoord()
 {

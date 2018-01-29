@@ -1,3 +1,8 @@
+/*
+ *      Snake v2.1
+ *          https://github.com/Yaroslav55/Snake-2
+ *                  Dev Yaroslav
+ */
 #include "mainwindow.h"
 #include <QApplication>
 #include <QTimer>

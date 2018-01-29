@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QPainter>
 #include <QTimer>
-
+#include <QMouseEvent>
 #include "snake.h"
 
 namespace Ui {
@@ -20,10 +20,12 @@ public:
     ~MainWindow();
 protected:
     void paintEvent(QPaintEvent *event);
+    void mousePressEvent(QMouseEvent * event);
 private:
     Ui::MainWindow *ui;
     QTimer *tmr;
     snake snkClass;
+    QPoint mousePos{320, 240};
 
 private slots:
     void updateTime();
