@@ -2,4 +2,4 @@ Snake-2
 =============================
 Bot for play in snake
 -----------------------------
-QT Widget C++
+Qt Widget C++
